@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Pomodoro Timer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #bb4949;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #c35d5c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button#pomodoro {
+            background-color: #bb4949;
+        }
+
+        button#shortBreak {
+            background-color: #38848a;
+        }
+
+        button#longBreak {
+            background-color: #387096;
+        }
+
+        button:hover {
+            filter: brightness(1.2);
+        }
+
+        #timer {
+            font-size: 72px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        #controlButton {
+            font-size: 32px;
+            padding: 12px 24px;
+            background-color: #ffffff;
+            color: #000000b6;
+        }
+
+        .tasks-container {
+            text-align: center;
+            background-color: #c35d5c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .tasks-container h2 {
+            color: #ffffff;
+        }
+
+        .add-task-button {
+            font-size: 16px;
+            padding: 8px 16px;
+            margin-top: 10px;
+            background-color: #ffffff;
+            color: #000000b6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .add-task-button:hover {
+            filter: brightness(1.2);
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container,
+        .tasks-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #ffffff;
+        }
+
+        .tasks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .tasks-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ffffff;
+            text-align: left;
+            font-size: 22px;
+            color: azure;
+        }
+
+        .tasks-table input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .completed-task {
+            text-decoration: line-through;
+        }
+
+        .delete-task {
+            color: #ff0000;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .delete-task:hover {
+            color: #ff0000;
+        }
+
+        .bin-icon {
+            color: #ff0000;
+            margin-right: 5px;
+        }
+
+        .task-separator {
+            border-top: 1px solid #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <h1>DJANGO POMODORO TIMER</h1>
+        <div class="container">
+            <button id="pomodoro" data-timer="{{ timer.pomodoro }}" style="background-color: #bb4949;">Pomodoro</button>
+            <button id="shortBreak" data-timer="{{ timer.short_break }}" style="background-color: #38848a;">Short
+                Break</button>
+            <button id="longBreak" data-timer="{{ timer.long_break }}" style="background-color: #387096;">Long
+                Break</button>
+            <a href="http://127.0.0.1:8000/settings"><i style="font-size:30px" class="fa">&#xf013;</i></a>
+            <p id="timer">25:00</p>
+            <button id="controlButton" onclick="toggleTimer()">START</button>
+        </div>
+        <div class="tasks-container">
+            <h2>Tasks</h2>
+            <table class="tasks-table">
+                {% for task in tasks %}
+                <tr class="task-separator">
+
+                    <td> {{task.custom_id}} </td>
+                    <td>
+                        <p>{{ task.task_desc }}</p>
+                    </td>
+                    <td> {{task.est_pomodoro}} - Pomodoro's</td>
+
+                    <td>
+                        <a href="{% url 'delete_task' task.custom_id %}" class="delete-task"><i class="fa fa-trash-o"
+                                aria-hidden="true" style="color: #ffffff;"></i> </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <a class="add-task-button" href="{% url 'add_task' %}"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;
+                Add Task</a>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        let isRunning = false;
+        let selectedTime = 25;
+        document.getElementById("pomodoro").addEventListener("click", function () {
+            var
+                timerValue = parseInt(this.getAttribute("data-timer")); setTimer(timerValue, '#bb4949');
+        });
+        document.getElementById("shortBreak").addEventListener("click", function () {
+            var
+                timerValue = parseInt(this.getAttribute("data-timer")); setTimer(timerValue, '#38848a');
+        });
+        document.getElementById("longBreak").addEventListener("click", function () {
+            var
+                timerValue = parseInt(this.getAttribute("data-timer")); setTimer(timerValue, '#387096');
+        }); function
+            setTimer(minutes, color) {
+            selectedTime = minutes; resetTimerDisplay(); changeBackgroundColor(color);
+        } function resetTimerDisplay() {
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = `${formatTime(selectedTime)}:00`;
+        } function toggleTimer() {
+            const
+                controlButton = document.getElementById('controlButton'); if (isRunning) {
+                    clearInterval(timer);
+                    controlButton.textContent = 'Start'; isRunning = false;
+                } else {
+                let totalSeconds = selectedTime * 60;
+                timer = setInterval(function () {
+                    const minutes = Math.floor(totalSeconds / 60); const
+                        seconds = totalSeconds % 60;
+                    document.getElementById('timer').textContent = `${formatTime(minutes)}:${formatTime(seconds)}`; if
+                        (totalSeconds === 0) {
+                        clearInterval(timer); alert('Timer expired!');
+                        controlButton.textContent = 'Start'; isRunning = false;
+                    } else { totalSeconds--; }
+                }, 1000);
+                controlButton.textContent = 'Stop'; isRunning = true;
+            }
+        } function formatTime(time) {
+            return time < 10
+                ? `0${time}` : time;
+        } function changeBackgroundColor(color) {
+            document.body.style.backgroundColor = color;
+        } function changeBackgroundColor(color) {
+            document.body.style.backgroundColor = color;
+            document.querySelector('.container').style.backgroundColor = color;
+            document.querySelector('.tasks-container').style.backgroundColor = color;
+        } </script>
+
+</body>
+
+</html>

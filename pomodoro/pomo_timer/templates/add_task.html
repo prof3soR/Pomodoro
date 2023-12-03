@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django Pomodoro Timer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #bb4949;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 85vh;
+            margin: 0;
+        }
+
+        .main-wrapper {
+            text-align: center;
+            background-color: #c35d5c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .main-wrapper a {
+            text-decoration: none;
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: inline-block;
+            background-color: #ffffff;
+            color: #000000b6;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-wrapper a:hover {
+            background-color: #ccc;
+        }
+
+        .main-wrapper form {
+            margin-top: 15px;
+        }
+
+        form input[type="text"],
+        form input[type="number"],
+        form input[type="submit"] {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            border-radius: 5px;
+        }
+
+        form input[type="submit"] {
+            background-color: #ffffff;
+            color: #000000b6;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #ccc;
+        }
+
+        h2 {
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <h2>ADD A NEW TASK</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" maxlength="200" name="task_desc" placeholder="What are you working on?">
+            <input type="number" name="est_pomodoro" min="1" placeholder="Estimated number of pomodoros">
+            <input type="submit" value="Save Task">
+        </form>
+        <a href="{% url 'index' %}"> Go back</a>
+    </div>
+</body>
+
+</html>

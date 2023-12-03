@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Pomodoro Timer Settings</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #bb4949;
+            font-family: 'Roboto', sans-serif;
+            color: #ffffff;
+        }
+
+        .container {
+            background-color: #c35d5c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 32px;
+
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        form label {
+            font-size: 1.5em;
+            color: #fff;
+            text-align: left;
+            margin: 20px;
+        }
+
+        form input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            background-color: #bb4949;
+            color: #ffffff;
+            transition: background-color 0.3s;
+        }
+
+        form input[type="number"]:hover {
+            background-color: #a63b3b;
+        }
+
+        form input[type="submit"],
+        a {
+            width: auto;
+            padding: 5px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #000000;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin: 1px;
+        }
+
+        form input[type="submit"]:hover,
+        a:hover {
+            background-color: #cccccc;
+        }
+
+        form div {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="settings-container" class="container">
+        <h2>Settings <a href="{% url 'index' %}"><i class="fa fa-home"></i></a></h2>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label for="Pomodoro">Pomodoro:</label>
+                <input type="number" name="PomodoroMinutes" min="0" max="59" placeholder="mm" value={{timer.pomodoro}}>
+            </div>
+            <div>
+                <label for="short_break">Short Break:</label>
+                <input type="number" name="short_breakMinutes" min="0" max="59" placeholder="mm"
+                    value={{timer.short_break}}>
+            </div>
+            <div>
+                <label for="long_break">Long Break:</label>
+                <input type="number" name="long_breakMinutes" min="0" max="59" placeholder="mm"
+                    value={{timer.long_break}}>
+            </div>
+            <input type="submit" name="save" value="Save">
+            <a href="{% url 'default' %}">Default</a>
+
+        </form>
+    </div>
+</body>
+
+</html>
